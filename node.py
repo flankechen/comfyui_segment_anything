@@ -22,6 +22,7 @@ from local_groundingdino.util.slconfig import SLConfig as local_groundingdino_SL
 from local_groundingdino.models import build_model as local_groundingdino_build_model
 import glob
 import folder_paths
+import json
 
 import node_helpers
 from typing import Iterable
@@ -812,12 +813,15 @@ class GroundingDinoBbox:
                     res_images.append(bbox_image.unsqueeze(0))
                     res_masks.append(mask)
                     res_boxes.append(box)
-
+        
+        # Convert tensor boxes to a list of lists for JSON serialization
+        res_boxes_list = [box.tolist() for box in res_boxes]
+        res_boxes_str = json.dumps(res_boxes_list)
         # if len(res_images) == 0:
         #     _, height, width, _ = image.size()
         #     empty_mask = torch.zeros((1, height, width), dtype=torch.uint8, device="cpu")
         #     return (empty_mask, empty_mask)
-        return (res_images, res_masks, res_boxes)
+        return (res_images, res_masks, res_boxes_str)
     
 
 class GroundingDinoBboxSingle:
